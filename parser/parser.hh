@@ -19,6 +19,9 @@ private:
 
     std::shared_ptr<Stmt> parse_stmt();
     std::shared_ptr<Expr> parse_expr();
+    std::shared_ptr<Expr> parse_primary_expr();
+    std::shared_ptr<Expr> parse_additive_expr();
+    std::shared_ptr<Expr> parse_multiplicative_expr();
 
     std::vector<Token> tokens;
     size_t current = 0;

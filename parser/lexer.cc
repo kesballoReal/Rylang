@@ -2,6 +2,11 @@
 
 #include <iostream>
 
+std::unordered_map<std::string, TokenType> keywords = 
+{
+    {"null", TokenType::NullTok},
+};
+
 std::vector<Token> tokenize(const std::string &src)
 {   
     std::vector<Token> tokens;
@@ -58,12 +63,22 @@ std::vector<Token> tokenize(const std::string &src)
                 std::string ident;
 
                 while ((i < src.length() && std::isalpha(src[i])))
-                {// like this right? 
+                {
                     ident += src[i];
                     i++;
                 }
-
-                tokens.push_back(Token(ident, TokenType::Identifier));
+                TokenType type;
+                
+                if (keywords.find(ident) == keywords.end())
+                {   
+                    // Didnt find it
+                    type = TokenType::Identifier;
+                }
+                else
+                {
+                    type = keywords[ident];
+                }
+                tokens.push_back(Token(ident, type));
                 i--;
             }
             // Checks for numbers

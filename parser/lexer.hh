@@ -8,11 +8,14 @@ lexer.hh
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 // TokenType enum. What tokens we support in our language
 enum TokenType {
     Number,
     Identifier,
+
+    NullTok,
 
     LeftParen,
     RightParen,
@@ -26,6 +29,9 @@ enum TokenType {
 
     EoF // This is for letting us know where the file ends. EndOfFILE
 };
+
+
+extern std::unordered_map<std::string, TokenType> keywords;
 
 // This will shape our tokens. Every token has a value and a type
 struct Token {

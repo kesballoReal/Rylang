@@ -11,9 +11,3 @@ Statement:
     if (expression) then (do this do that)
 
 EXPRESSIONS: RETURN A VALUE
-
-u following me?
-
-im trying to make it as simpler as possible
-
-u there?

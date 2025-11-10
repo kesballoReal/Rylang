@@ -5,6 +5,12 @@
 #include "parser/lexer.hh"
 #include "parser/parser.hh"
 
+#include "runtime/values.hh"
+#include "runtime/environment/environment.hh"
+#include "runtime/interpreter/interpreter.hh"
+
+#include "utils/utils.hh"
+
 int main(int argc, char** argv)
 {   
     // ryc <source> command
@@ -19,6 +25,11 @@ int main(int argc, char** argv)
 
     /* Open file */
     std::ifstream fptr(f_path);
+    if (!fptr)
+    {
+        std::cerr << "ryc: no such file or directory: '" << f_path << '\'' << std::endl;
+        return 1;
+    }
     std::string src; // Source file to tokenize
 
     // Read line by line
@@ -32,19 +43,24 @@ int main(int argc, char** argv)
 
     std::vector<Token> tokens = tokenize(src);
 
-    /* Test to see if the tokens generated are good */
-    /*for (std::size_t i = 0; i < tokens.size(); i++)
+    /* Tokens debugging  */
+
+    for (std::size_t i = 0; i < tokens.size(); i++)
     {
         std::cout << "Type: " << tokens[i].type << ", Value: " << tokens[i].value << std::endl;
-    }*/
+    }
 
     auto parser = Parser(tokens);
     auto program = parser.produceAST();
+    print_ast(program, 0); // Comment this line to remove the debug for the AST
 
-    for (std::size_t i = 0; i < program->body.size(); i++)
-    {
-        std::cout << program->body[i]->kind << std::endl;
-    }
+    Environment* env = new Environment();
+
+    env->declareVar("x", std::make_shared<IntValue>(100));
+
+    auto result = evaluate(program, env);
+
+    print_value(result);
 
     return 0;
 }
