@@ -1,13 +1,28 @@
 #include "interpreter.hh"
+#include "../../utils/utils.hh"
+#include "../../utils/error.hh"
 
 #include "../eval/expressions.hh"
+#include "../eval/statements.hh"
 
 #include <iostream>
+#include <cmath>
 
-RVPtr evaluate(SPtr node, Environment* env)
+RVPtr evaluate(SPtr node, Environment* env, std::size_t line)
 {
     switch (node->kind)
     {
+        case NodeType::VarDeclaration:
+        {
+            auto var = std::dynamic_pointer_cast<ASTVarDecl>(node);
+            if (!var)
+            {
+                std::cerr << "ryc: internal error: invalid variable node" << std::endl;
+                std::exit(1);
+            }
+
+            return eval_var_declaration(var, env, line);
+        }
         case NodeType::NumericLiteral:
         {
             auto num = std::dynamic_pointer_cast<ASTNumericLiteral>(node);
@@ -16,8 +31,11 @@ RVPtr evaluate(SPtr node, Environment* env)
                 std::cerr << "ryc: internal error: invalid numeric node" << std::endl;
                 std::exit(1);
             }
-            /* Later check for integer/floats */
-            return std::make_shared<IntValue>(num->value);
+            if (std::floor(num->value) == num->value)
+            {
+                return std::make_shared<IntValue>(static_cast<int>(num->value));
+            }
+            return std::make_shared<FloatValue>(num->value);
         }
         case NodeType::NullLiteral:
         {
@@ -32,12 +50,12 @@ RVPtr evaluate(SPtr node, Environment* env)
                 std::exit(1);
             }
 
-            RVPtr value = env->lookupVar(identifier->name);
+            RVPtr value = env->lookupVar(identifier->name, line);
 
             if (!value)
             {
-                std::cerr << "ryc: variable '" << identifier->name << "' is uninitialized!" << std::endl;
-                std::exit(1);
+                std::string err = "ryc: variable '" + identifier->name + "' is uninitialized!";
+                runtime_err(err, line);
             }
 
             return value;
@@ -54,7 +72,7 @@ RVPtr evaluate(SPtr node, Environment* env)
 
             for (std::size_t i = 0; i < program->body.size(); i++)
             {
-                last_eval = evaluate(program->body[i], env);
+                last_eval = evaluate(program->body[i], env, program->body[i]->line-1);
             }
 
             return last_eval;
@@ -67,7 +85,13 @@ RVPtr evaluate(SPtr node, Environment* env)
                 std::cerr << "ryc: internal error: invalid binary node" << std::endl;
                 std::exit(1);
             }
-            return eval_binary_expr(bin, env);
+            return eval_binary_expr(bin, env, line);
         }     
+        default:
+        {
+            std::cerr << "ryc: This AST Node has not yet been setup for interpretation: " << std::endl;
+            print_ast(node, 0);
+            std::exit(1);
+        }
     }
 }

@@ -1,12 +1,13 @@
 #include "expressions.hh"
+#include "../../utils/error.hh"
 
 #include <iostream>
 
-RVPtr eval_binary_expr(std::shared_ptr<ASTBinaryExpr> bin, Environment* env)
+RVPtr eval_binary_expr(std::shared_ptr<ASTBinaryExpr> bin, Environment* env, std::size_t line)
 {
     // Evaluate left and right operands
-    RVPtr left_val = evaluate(bin->left, env);
-    RVPtr right_val = evaluate(bin->right, env);
+    RVPtr left_val = evaluate(bin->left, env, line);
+    RVPtr right_val = evaluate(bin->right, env, line);
 
     // If either operand is null, return null
     if (!left_val || !right_val || left_val->kind == VAL_NULL || right_val->kind == VAL_NULL)
@@ -25,8 +26,9 @@ RVPtr eval_binary_expr(std::shared_ptr<ASTBinaryExpr> bin, Environment* env)
             a_is_float = true;
             break;
         default:
-            std::cerr << "ryc: left operand is not numeric!" << std::endl;
-            std::exit(1);
+            std::string err = "unsupported operand type(s) for " + bin->op + ": "
+                             + vtostr(left_val->kind) + " and " + vtostr(right_val->kind);
+            runtime_err(err, line);
     }
 
     switch (right_val->kind) {
@@ -38,8 +40,9 @@ RVPtr eval_binary_expr(std::shared_ptr<ASTBinaryExpr> bin, Environment* env)
             b_is_float = true;
             break;
         default:
-            std::cerr << "ryc: right operand is not numeric!" << std::endl;
-            std::exit(1);
+            std::string err = "unsupported operand type(s) for " + bin->op + ": "
+                             + vtostr(left_val->kind) + " and " + vtostr(right_val->kind);
+            runtime_err(err, line);
     }
 
     // Determine if result should be float
@@ -52,8 +55,8 @@ RVPtr eval_binary_expr(std::shared_ptr<ASTBinaryExpr> bin, Environment* env)
     else if (bin->op == "*") result = a * b;
     else if (bin->op == "/") {
         if (b == 0.0) {
-            std::cerr << "ryc: division by zero!" << std::endl;
-            std::exit(1);
+            std::string err = "division by zero error!";
+            runtime_err(err, line);
         }
         result = a / b;
     }

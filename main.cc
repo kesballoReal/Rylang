@@ -56,11 +56,10 @@ int main(int argc, char** argv)
 
     Environment* env = new Environment();
 
-    env->declareVar("x", std::make_shared<IntValue>(100));
-
-    auto result = evaluate(program, env);
+    auto result = evaluate(program, env, 0);
 
     print_value(result);
+    std::cout << "Type: " << vtostr(result->kind) << std::endl;
 
     return 0;
 }

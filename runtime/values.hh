@@ -7,6 +7,7 @@ values.hh
 #pragma once
 
 #include <cstddef>
+#include <string>
 
 enum ValueType { // RuntimeValues we support
     VAL_INT,
@@ -40,3 +41,16 @@ struct NullValue : RuntimeValue {
     std::nullptr_t value;
     NullValue(std::nullptr_t v) : value(v) { kind = ValueType::VAL_NULL; }
 };
+
+/* Helpers */
+
+inline std::string vtostr(ValueType type)
+{
+    switch (type)
+    {
+        case VAL_INT:   return "int";
+        case VAL_FLOAT: return "float";
+        case VAL_NULL:  return "null";
+        default:        return "unknown";
+    }
+}

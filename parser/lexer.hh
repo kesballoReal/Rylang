@@ -15,7 +15,12 @@ enum TokenType {
     Number,
     Identifier,
 
+    DataType,
+
     NullTok,
+
+    VarTok,
+    ConstTok,
 
     LeftParen,
     RightParen,
@@ -26,6 +31,8 @@ enum TokenType {
     Slash,
 
     Equals,
+    Colon,
+    Semicolon,
 
     EoF // This is for letting us know where the file ends. EndOfFILE
 };
@@ -37,9 +44,10 @@ extern std::unordered_map<std::string, TokenType> keywords;
 struct Token {
     std::string value;
     TokenType type;
+    std::size_t line;
 
     // Constructor
-    Token(std::string v, TokenType t) : value(v), type(t) {};
+    Token(std::string v, TokenType t, std::size_t l) : value(v), type(t), line(l) {};
 };
 
 // This function takes in input a string (our file given in main.cc) and it outputs a vector of tokens

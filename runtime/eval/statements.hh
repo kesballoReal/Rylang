@@ -1,6 +1,6 @@
 /*
 
-expressions.hh
+statements.hh
 
 */
 
@@ -13,4 +13,4 @@ expressions.hh
 
 using RVPtr = std::shared_ptr<RuntimeValue>;
 
-RVPtr eval_binary_expr(std::shared_ptr<ASTBinaryExpr> bin, Environment* env, std::size_t line);
+RVPtr eval_var_declaration(std::shared_ptr<ASTVarDecl> node, Environment* env, std::size_t line);

@@ -1,5 +1,8 @@
 #include "utils.hh"
 
+#include <iomanip>
+#include <cmath>
+
 void print_ast(std::shared_ptr<Stmt> node, int indent = 0)
 {
     std::string pad(indent, ' '); // This is for indentation
@@ -24,7 +27,29 @@ void print_ast(std::shared_ptr<Stmt> node, int indent = 0)
             }
             break;
         }
+        case VarDeclaration:
+        {
+            std::cout << pad << "VarDeclaration:" << std::endl;
+            auto var = std::dynamic_pointer_cast<ASTVarDecl>(node);
+            if (!var) {
+                std::cerr << pad << "[Invalid VarDeclaration node]" << std::endl;
+                break;
+            }
 
+            std::cout << pad << "  Name:" << std::endl;
+            std::cout << pad << "    " << var->name << std::endl;
+            std::cout << pad << "  Type:" << std::endl;
+            std::cout << pad << "    " << var->type << std::endl;
+
+            if (var->value)
+            {
+                std::cout << pad << "  Value:" << std::endl;
+                print_ast(*var->value, indent + 4);
+            }
+            std::cout << pad << "  Const: " << (var->is_const ? "True" : "False") << std::endl;
+            break;
+            
+        }
         case BinaryExpr:
         {
             auto bin = std::dynamic_pointer_cast<ASTBinaryExpr>(node);
@@ -88,7 +113,13 @@ void print_value(std::shared_ptr<RuntimeValue> node)
         case VAL_FLOAT:
         {
             auto num = std::dynamic_pointer_cast<FloatValue>(node);
-            std::cout << num->value << std::endl;
+
+            if (std::floor(num->value) == num->value) {
+                std::cout << static_cast<int>(num->value) << std::endl;
+            } else {
+                std::cout << num->value << std::endl;
+            }
+
             break;
         }
         case VAL_NULL:
