@@ -1,36 +1,41 @@
+#include <iostream>
+
 #include "environment.hh"
+#include "statements.hh"
 
 #include "../../utils/error.hh"
 
-#include <iostream>
+RVPtr Environment::declareVar( const std::string& name,RVPtr value,ValueType type, bool isConst,std::size_t line){
+    if (variables.find(name) != variables.end())
+        runtime_err("ryc: cannot redeclare variable '" + name + "'", line);
 
-
-
-RVPtr Environment::declareVar(const std::string& varname, RVPtr value, std::size_t line)
-{
-    if (this->variables.find(varname) != this->variables.end())
-    {
-        // Variable already exists, cant re-declare it.
-        std::string err =  "ryc: cannot declare the symbol '" + varname + "', as it is already defined.";
-        runtime_err(err, line);
-    }
-
-    this->variables[varname] = value;
+    variables[name] = VarInfo{
+        .value = value,
+        .isConst = isConst,
+        .type = type
+    };
     return value;
 }
 
-RVPtr Environment::assignVar(const std::string& varname, RVPtr value, std::size_t line)
+RVPtr Environment::assignVar(const std::string& name, RVPtr value, std::size_t line)
 {
-    auto env = this->resolve(varname, line);
-    env->variables[varname] = value;
-    return value;
+    Environment* env = resolve(name, line);
+    VarInfo& info = env->variables[name];
+
+    if (info.isConst)
+        runtime_err("ryc: cannot assign to constant variable '" + name + "'", line);
+
+    // Cast to declared type
+    info.value = cast(value, info.type, line);
+
+    return info.value;
 }
 
-RVPtr Environment::lookupVar(const std::string& varname, std::size_t line)
+RVPtr Environment::lookupVar(const std::string& name, std::size_t line)
 {
-    auto env = this->resolve(varname, line);
-    return env->variables[varname];
+    return resolve(name, line)->variables[name].value;
 }
+
 
 Environment* Environment::resolve(const std::string& varname, std::size_t line)
 {
@@ -38,10 +43,12 @@ Environment* Environment::resolve(const std::string& varname, std::size_t line)
     {
         return this;
     }
+
     if (this->parent == nullptr)
     {
         std::string err = "ryc: cannot resolve symbol '" + varname + "', as it does not exist.";
         runtime_err(err, line);
     }
+
     return this->parent->resolve(varname, line);
 }

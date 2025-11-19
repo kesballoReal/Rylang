@@ -7,6 +7,7 @@ lexer.hh
 #pragma once
 
 #include <string>
+#include <utility>
 #include <vector>
 #include <unordered_map>
 
@@ -14,10 +15,15 @@ lexer.hh
 enum TokenType {
     Number,
     Identifier,
+    String,
 
     DataType,
 
     NullTok,
+    BoolTok,
+
+    TrueTok,
+    FalseTok,
 
     VarTok,
     ConstTok,
@@ -25,10 +31,23 @@ enum TokenType {
     LeftParen,
     RightParen,
 
+    LeftBrace,
+    RightBrace,
+
     Plus,
     Minus,
     Star,
     Slash,
+  
+    BinaryOP,
+    UnaryOP,
+
+    IfTok,
+    ElseTok,
+    WhileTok,
+
+    ContinueTok,
+    BreakTok,
 
     Equals,
     Colon,
@@ -47,7 +66,7 @@ struct Token {
     std::size_t line;
 
     // Constructor
-    Token(std::string v, TokenType t, std::size_t l) : value(v), type(t), line(l) {};
+    Token(std::string v, TokenType t, std::size_t l) : value(std::move(v)), type(t), line(l) {};
 };
 
 // This function takes in input a string (our file given in main.cc) and it outputs a vector of tokens

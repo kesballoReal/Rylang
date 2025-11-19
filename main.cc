@@ -11,6 +11,10 @@
 
 #include "utils/utils.hh"
 
+#define LEXER_DEBUG 0
+#define PARSER_DEBUG 1
+#define INTERPRETER_DEBUG 1
+
 int main(int argc, char** argv)
 {   
     // ryc <source> command
@@ -36,30 +40,43 @@ int main(int argc, char** argv)
     std::string l;
     while (std::getline(fptr, l))
     {
-        src += l + '\n'; // we need '\n' so the content isnt all on a single line
+        src += l + '\n';
     }
 
     fptr.close();
 
     std::vector<Token> tokens = tokenize(src);
 
-    /* Tokens debugging  */
-
-    for (std::size_t i = 0; i < tokens.size(); i++)
-    {
-        std::cout << "Type: " << tokens[i].type << ", Value: " << tokens[i].value << std::endl;
+    if (LEXER_DEBUG)
+    {   
+        std::cout << "===== LEXER DEBUG =====" << std::endl;
+        for (std::size_t i = 0; i < tokens.size(); i++)
+        {
+            std::cout << "Type: " << tokens[i].type << ", Value: " << tokens[i].value << std::endl;
+        }
     }
 
     auto parser = Parser(tokens);
     auto program = parser.produceAST();
-    print_ast(program, 0); // Comment this line to remove the debug for the AST
+
+    if (PARSER_DEBUG)
+    {   
+        std::cout << "===== PARSER DEBUG =====" << std::endl;
+        print_ast(program, 0);
+    }
 
     Environment* env = new Environment();
 
     auto result = evaluate(program, env, 0);
 
-    print_value(result);
-    std::cout << "Type: " << vtostr(result->kind) << std::endl;
+    if (INTERPRETER_DEBUG)
+    {   
+        std::cout << "===== INTERPRETER DEBUG =====" << std::endl;
+        std::cout << "Value: "; print_value(result);
+        std::cout << "Type: " << vtostr(result->kind) << std::endl;
+    }
+
+    delete env;
 
     return 0;
 }

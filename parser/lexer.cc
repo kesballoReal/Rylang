@@ -12,7 +12,20 @@ std::unordered_map<std::string, TokenType> keywords =
     /* Datatypes */
     {"int", TokenType::DataType},
     {"float", TokenType::DataType},
-    {"auto", TokenType::DataType}
+    {"bool", TokenType::DataType},
+    {"string", TokenType::DataType},
+    {"auto", TokenType::DataType},
+
+    {"true", TokenType::TrueTok},
+    {"false", TokenType::FalseTok},
+
+    /* Control Flow */
+    {"if", TokenType::IfTok},
+    {"else", TokenType::ElseTok},
+    {"while", TokenType::WhileTok},
+
+    {"continue", TokenType::ContinueTok},
+    {"break", TokenType::BreakTok},
 };
 
 std::vector<Token> tokenize(const std::string &src)
@@ -29,16 +42,30 @@ std::vector<Token> tokenize(const std::string &src)
 
         std::size_t token_line = line; // capture line at start of token
 
+        // Multi-character symbols
+        if (src[i] == '+' && src[i+1] == '+') { tokens.emplace_back("++", TokenType::UnaryOP, token_line); i++; continue; }
+        if (src[i] == '-' && src[i+1] == '-') { tokens.emplace_back("--", TokenType::UnaryOP, token_line); i++; continue; }
+        if (src[i] == '&' && src[i+1] == '&') { tokens.emplace_back("&&", TokenType::BinaryOP, token_line); i++; continue; }
+        if (src[i] == '|' && src[i+1] == '|') { tokens.emplace_back("||", TokenType::BinaryOP, token_line); i++; continue; }
+		if (src[i] == '=' && src[i+1] == '=') { tokens.emplace_back("==", TokenType::BinaryOP, token_line); i++; continue; }
+		if (src[i] == '!' && src[i+1] == '=') { tokens.emplace_back("!=", TokenType::BinaryOP, token_line); i++; continue; }
+		if (src[i] == '>' && src[i+1] == '=') { tokens.emplace_back(">=", TokenType::BinaryOP, token_line); i++; continue; }
+		if (src[i] == '<' && src[i+1] == '=') { tokens.emplace_back("<=", TokenType::BinaryOP, token_line); i++; continue; }
         // Single-character symbols
-        if (c == '(') { tokens.push_back(Token("(", TokenType::LeftParen, token_line)); continue; }
-        if (c == ')') { tokens.push_back(Token(")", TokenType::RightParen, token_line)); continue; }
-        if (c == '=') { tokens.push_back(Token("=", TokenType::Equals, token_line)); continue; }
-        if (c == '+') { tokens.push_back(Token("+", TokenType::Plus, token_line)); continue; }
-        if (c == '-') { tokens.push_back(Token("-", TokenType::Minus, token_line)); continue; }
-        if (c == '*') { tokens.push_back(Token("*", TokenType::Star, token_line)); continue; }
-        if (c == '/') { tokens.push_back(Token("/", TokenType::Slash, token_line)); continue; }
-        if (c == ':') { tokens.push_back(Token(":", TokenType::Colon, token_line)); continue; }
-        if (c == ';') { tokens.push_back(Token(";", TokenType::Semicolon, token_line)); continue; }
+        if (c == '(') { tokens.emplace_back("(", TokenType::LeftParen, token_line); continue; }
+        if (c == ')') { tokens.emplace_back(")", TokenType::RightParen, token_line); continue; }
+        if (c == '{') { tokens.emplace_back("{", TokenType::LeftBrace, token_line); continue; }
+        if (c == '}') { tokens.emplace_back("}", TokenType::RightBrace, token_line); continue; }
+        if (c == '=') { tokens.emplace_back("=", TokenType::Equals, token_line); continue; }
+        if (c == '+') { tokens.emplace_back("+", TokenType::Plus, token_line); continue; }
+        if (c == '-') { tokens.emplace_back("-", TokenType::Minus, token_line); continue; }
+        if (c == '*') { tokens.emplace_back("*", TokenType::Star, token_line); continue; }
+        if (c == '/') { tokens.emplace_back("/", TokenType::Slash, token_line); continue; }
+        if (c == ':') { tokens.emplace_back(":", TokenType::Colon, token_line); continue; }
+        if (c == ';') { tokens.emplace_back(";", TokenType::Semicolon, token_line); continue; }
+        if (c == '!') { tokens.emplace_back("!", TokenType::UnaryOP, token_line); continue; }
+        if (c == '>') { tokens.emplace_back(">", TokenType::BinaryOP, token_line); continue; }
+        if (c == '<') { tokens.emplace_back("<", TokenType::BinaryOP, token_line); continue; }
 
         // Identifiers / keywords
         if (std::isalpha(c))
@@ -50,7 +77,7 @@ std::vector<Token> tokenize(const std::string &src)
                 i++;
             }
             TokenType type = (keywords.find(ident) == keywords.end()) ? TokenType::Identifier : keywords[ident];
-            tokens.push_back(Token(ident, type, token_line));
+            tokens.emplace_back(ident, type, token_line);
             i--; // step back after overshoot
             continue;
         }
@@ -72,15 +99,35 @@ std::vector<Token> tokenize(const std::string &src)
                 num += src[i];
                 i++;
             }
-            tokens.push_back(Token(num, TokenType::Number, token_line));
+            tokens.emplace_back(num, TokenType::Number, token_line);
             i--; // step back
             continue;
         }
+        if (c == '"') {
+            std::string str;
+            i++;
 
-        // Unexpected character
+            while (i < src.length() && src[i] != '"') {
+                if (src[i] == '\\' && i + 1 < src.length() && src[i + 1] == '"') {
+                    str += '"';
+                    i += 2;
+                    continue;
+                }
+                str += src[i];
+                i++;
+            }
+
+            if (i >= src.length() || src[i] != '"') {
+                syntax_err("unterminated string literal", token_line);
+            }
+
+            tokens.emplace_back(str, TokenType::String, token_line);
+            continue;
+        }
+
         syntax_err(std::string("unexpected character found while lexing: ") + c, token_line);
     }
 
-    tokens.push_back(Token("EoF", TokenType::EoF, line));
+    tokens.emplace_back("EoF", TokenType::EoF, line);
     return tokens;
 }
