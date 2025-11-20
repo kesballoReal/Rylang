@@ -11,6 +11,11 @@
 RVPtr evaluate(SPtr node, Environment* env, std::size_t line)
 {
     switch (node->kind) {
+        case NodeType::ExprStmt:
+        {
+            auto expr = std::static_pointer_cast<ASTExprStmt>(node);
+            return evaluate(expr->expression, env, line);
+        }
         case NodeType::VarDeclaration:
         {
             auto var = std::static_pointer_cast<ASTVarDecl>(node);
@@ -25,6 +30,21 @@ RVPtr evaluate(SPtr node, Environment* env, std::size_t line)
         {
             auto wh = std::static_pointer_cast<ASTWhileStmt>(node);
             return eval_while_stmt(wh, env, line);
+        }
+        case NodeType::ForStmt:
+        {
+            auto f = std::static_pointer_cast<ASTForStmt>(node);
+            return eval_for_stmt(f, env, line);
+        }
+        case NodeType::FunctionStmt:
+        {
+            auto func = std::static_pointer_cast<ASTFunctionStmt>(node);
+            return eval_func_stmt(func, env, line);
+        }
+        case NodeType::ReturnStmt:
+        {
+            auto ret = std::static_pointer_cast<ASTReturnStmt>(node);
+            return eval_return_stmt(ret, env, line);
         }
         case NodeType::BreakStmt:
             return std::make_shared<BreakValue>();
@@ -66,6 +86,16 @@ RVPtr evaluate(SPtr node, Environment* env, std::size_t line)
             auto str = std::static_pointer_cast<ASTStringLiteral>(node);
             return std::make_shared<StringValue>(str->value);
         }
+        case NodeType::CharLiteral:
+        {
+            auto ch = std::static_pointer_cast<ASTCharLiteral>(node);
+            return std::make_shared<CharValue>(ch->value);
+        }
+        case NodeType::ArrayLiteral:
+        {
+            auto arr = std::static_pointer_cast<ASTArrayLiteral>(node);
+            return eval_array_literal(arr, env, line);
+        }
         case NodeType::Program:
         {
             auto program = std::static_pointer_cast<ASTProgram>(node);
@@ -98,6 +128,21 @@ RVPtr evaluate(SPtr node, Environment* env, std::size_t line)
         {
             auto assign = std::static_pointer_cast<ASTAssignExpr>(node);
             return eval_assign_expr(assign, env, line);
+        }
+        case NodeType::MemberExpr:
+        {
+            auto mem = std::static_pointer_cast<ASTMemberExpr>(node);
+            return eval_member_expr(mem, env, line);
+        }
+        case NodeType::CallExpr:
+        {
+            auto call = std::static_pointer_cast<ASTCallExpr>(node);
+            return eval_call_expr(call, env, line);
+        }
+        case NodeType::CastExpr:
+        {
+            auto cast = std::static_pointer_cast<ASTCastExpr>(node);
+            return eval_cast_expr(cast, env, line);
         }
         default:
         {

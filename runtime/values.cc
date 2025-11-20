@@ -1,5 +1,9 @@
 #include "values.hh"
+
 #include <cmath>
+
+// ---------------------- ArrayValue ----------------------
+ArrayValue::ArrayValue(std::vector<RVPtr> e) : RuntimeValue(VAL_ARRAY), elements(std::move(e)) {}
 
 // ---------------------- BoolValue ----------------------
 BoolValue::BoolValue(bool v) : RuntimeValue(VAL_BOOL), value(v) {}
@@ -42,6 +46,12 @@ RVPtr FloatValue::div(RVPtr other, std::size_t line) {
     else runtime_err("cannot divide Float and non-numeric type", line);
     if (b == 0.0) runtime_err("Division by zero error", line);
     return std::make_shared<FloatValue>(value / b);
+}
+RVPtr FloatValue::mod(RVPtr other, std::size_t line) {
+    if (other->kind == VAL_INT) return std::make_shared<FloatValue>(std::fmod(value, std::dynamic_pointer_cast<IntValue>(other)->value));
+    if (other->kind == VAL_FLOAT) return std::make_shared<FloatValue>(std::fmod(value, std::dynamic_pointer_cast<FloatValue>(other)->value));
+    runtime_err("cannot module Float and non-numeric type", line);
+    return nullptr;
 }
 RVPtr FloatValue::eq(RVPtr other, std::size_t line) {
     if (other->kind == VAL_INT) return std::make_shared<BoolValue>(value == std::dynamic_pointer_cast<IntValue>(other)->value);
@@ -105,6 +115,12 @@ RVPtr IntValue::div(RVPtr other, std::size_t line) {
     else runtime_err("cannot divide Int and non-numeric type", line);
     if (b == 0.0) runtime_err("Division by zero", line);
     return std::make_shared<FloatValue>(value / b);
+}
+RVPtr IntValue::mod(RVPtr other, std::size_t line) {
+    if (other->kind == VAL_INT) return std::make_shared<IntValue>(std::fmod(value, std::dynamic_pointer_cast<IntValue>(other)->value));
+    if (other->kind == VAL_FLOAT) return std::make_shared<FloatValue>(std::fmod(value, std::dynamic_pointer_cast<FloatValue>(other)->value));
+    runtime_err("cannot module Int and non-numeric type", line);
+    return nullptr;
 }
 RVPtr IntValue::eq(RVPtr other, std::size_t line) {
     if (other->kind == VAL_INT) return std::make_shared<BoolValue>(value == std::dynamic_pointer_cast<IntValue>(other)->value);
@@ -181,13 +197,64 @@ RVPtr StringValue::lte(RVPtr other, std::size_t line) {
     }
     return std::make_shared<BoolValue>(value <= std::static_pointer_cast<StringValue>(other)->value);
 }
+// ---------------------- CharValue ----------------------
+CharValue::CharValue(char v) : RuntimeValue(VAL_CHAR), value(v) {}
+
+RVPtr CharValue::add(RVPtr other, std::size_t line) {
+    if (other->kind == VAL_CHAR) {
+        std::string s;
+        s += value;
+        s += std::dynamic_pointer_cast<CharValue>(other)->value;
+        return std::make_shared<StringValue>(s);
+    }
+    if (other->kind == VAL_STRING) {
+        std::string s;
+        s += value;
+        s += std::dynamic_pointer_cast<StringValue>(other)->value;
+        return std::make_shared<StringValue>(s);
+    }
+    runtime_err("cannot add Char and " + vtostr(other->kind), line);
+    return nullptr;
+}
+
+RVPtr CharValue::eq(RVPtr other, std::size_t line) {
+    if (other->kind != VAL_CHAR) return std::make_shared<BoolValue>(false);
+    return std::make_shared<BoolValue>(value == std::dynamic_pointer_cast<CharValue>(other)->value);
+}
+
+RVPtr CharValue::neq(RVPtr other, std::size_t line) {
+    if (other->kind != VAL_CHAR) return std::make_shared<BoolValue>(true);
+    return std::make_shared<BoolValue>(value != std::dynamic_pointer_cast<CharValue>(other)->value);
+}
+
+RVPtr CharValue::neg(std::size_t line) {
+    runtime_err("cannot negate a char", line);
+    return nullptr;
+}
+
+RVPtr CharValue::pos(std::size_t line) {
+    runtime_err("cannot apply unary + to a char", line);
+    return nullptr;
+}
+
+RVPtr CharValue::not_op(std::size_t line) {
+    runtime_err("cannot apply ! to a char", line);
+    return nullptr;
+}
+
 // ---------------------- NullValue ----------------------
 NullValue::NullValue() : RuntimeValue(VAL_NULL) {}
 
 // ---------------------- Break&Continue ----------------------
-
 BreakValue::BreakValue() : RuntimeValue(VAL_BREAK) {}
 ContinueValue::ContinueValue() : RuntimeValue(VAL_CONTINUE) {}
+
+// ---------------------- FunctionValue ----------------------
+FunctionValue::FunctionValue(std::shared_ptr<ASTFunctionStmt> d, Environment* c)
+    : RuntimeValue(VAL_FUNCTION),
+      declaration(std::move(d)),
+      closure(c)
+{}
 
 // ---------------------- Base helper ----------------------
 RVPtr RuntimeValue::neq(RVPtr other, std::size_t line) {

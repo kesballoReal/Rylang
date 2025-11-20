@@ -1,1 +1,3 @@
-var x: int = 5;
+var x: char = 'a';
+
+puts("%d", x);

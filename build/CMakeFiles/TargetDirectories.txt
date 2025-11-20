@@ -1,0 +1,3 @@
+/home/kes/Desktop/Language/build/CMakeFiles/ryc.dir
+/home/kes/Desktop/Language/build/CMakeFiles/edit_cache.dir
+/home/kes/Desktop/Language/build/CMakeFiles/rebuild_cache.dir

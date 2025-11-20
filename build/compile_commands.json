@@ -1,0 +1,62 @@
+[
+{
+  "directory": "/home/kes/Desktop/Language/build",
+  "command": "/usr/bin/g++  -I/home/kes/Desktop/Language/parser -I/home/kes/Desktop/Language/runtime -I/home/kes/Desktop/Language/runtime/environment -I/home/kes/Desktop/Language/runtime/eval -I/home/kes/Desktop/Language/runtime/interpreter -I/home/kes/Desktop/Language/utils -g -o CMakeFiles/ryc.dir/parser/lexer.cc.o -c /home/kes/Desktop/Language/parser/lexer.cc",
+  "file": "/home/kes/Desktop/Language/parser/lexer.cc",
+  "output": "CMakeFiles/ryc.dir/parser/lexer.cc.o"
+},
+{
+  "directory": "/home/kes/Desktop/Language/build",
+  "command": "/usr/bin/g++  -I/home/kes/Desktop/Language/parser -I/home/kes/Desktop/Language/runtime -I/home/kes/Desktop/Language/runtime/environment -I/home/kes/Desktop/Language/runtime/eval -I/home/kes/Desktop/Language/runtime/interpreter -I/home/kes/Desktop/Language/utils -g -o CMakeFiles/ryc.dir/parser/parser.cc.o -c /home/kes/Desktop/Language/parser/parser.cc",
+  "file": "/home/kes/Desktop/Language/parser/parser.cc",
+  "output": "CMakeFiles/ryc.dir/parser/parser.cc.o"
+},
+{
+  "directory": "/home/kes/Desktop/Language/build",
+  "command": "/usr/bin/g++  -I/home/kes/Desktop/Language/parser -I/home/kes/Desktop/Language/runtime -I/home/kes/Desktop/Language/runtime/environment -I/home/kes/Desktop/Language/runtime/eval -I/home/kes/Desktop/Language/runtime/interpreter -I/home/kes/Desktop/Language/utils -g -o CMakeFiles/ryc.dir/runtime/environment/environment.cc.o -c /home/kes/Desktop/Language/runtime/environment/environment.cc",
+  "file": "/home/kes/Desktop/Language/runtime/environment/environment.cc",
+  "output": "CMakeFiles/ryc.dir/runtime/environment/environment.cc.o"
+},
+{
+  "directory": "/home/kes/Desktop/Language/build",
+  "command": "/usr/bin/g++  -I/home/kes/Desktop/Language/parser -I/home/kes/Desktop/Language/runtime -I/home/kes/Desktop/Language/runtime/environment -I/home/kes/Desktop/Language/runtime/eval -I/home/kes/Desktop/Language/runtime/interpreter -I/home/kes/Desktop/Language/utils -g -o CMakeFiles/ryc.dir/runtime/eval/expressions.cc.o -c /home/kes/Desktop/Language/runtime/eval/expressions.cc",
+  "file": "/home/kes/Desktop/Language/runtime/eval/expressions.cc",
+  "output": "CMakeFiles/ryc.dir/runtime/eval/expressions.cc.o"
+},
+{
+  "directory": "/home/kes/Desktop/Language/build",
+  "command": "/usr/bin/g++  -I/home/kes/Desktop/Language/parser -I/home/kes/Desktop/Language/runtime -I/home/kes/Desktop/Language/runtime/environment -I/home/kes/Desktop/Language/runtime/eval -I/home/kes/Desktop/Language/runtime/interpreter -I/home/kes/Desktop/Language/utils -g -o CMakeFiles/ryc.dir/runtime/eval/statements.cc.o -c /home/kes/Desktop/Language/runtime/eval/statements.cc",
+  "file": "/home/kes/Desktop/Language/runtime/eval/statements.cc",
+  "output": "CMakeFiles/ryc.dir/runtime/eval/statements.cc.o"
+},
+{
+  "directory": "/home/kes/Desktop/Language/build",
+  "command": "/usr/bin/g++  -I/home/kes/Desktop/Language/parser -I/home/kes/Desktop/Language/runtime -I/home/kes/Desktop/Language/runtime/environment -I/home/kes/Desktop/Language/runtime/eval -I/home/kes/Desktop/Language/runtime/interpreter -I/home/kes/Desktop/Language/utils -g -o CMakeFiles/ryc.dir/runtime/interpreter/interpreter.cc.o -c /home/kes/Desktop/Language/runtime/interpreter/interpreter.cc",
+  "file": "/home/kes/Desktop/Language/runtime/interpreter/interpreter.cc",
+  "output": "CMakeFiles/ryc.dir/runtime/interpreter/interpreter.cc.o"
+},
+{
+  "directory": "/home/kes/Desktop/Language/build",
+  "command": "/usr/bin/g++  -I/home/kes/Desktop/Language/parser -I/home/kes/Desktop/Language/runtime -I/home/kes/Desktop/Language/runtime/environment -I/home/kes/Desktop/Language/runtime/eval -I/home/kes/Desktop/Language/runtime/interpreter -I/home/kes/Desktop/Language/utils -g -o CMakeFiles/ryc.dir/runtime/values.cc.o -c /home/kes/Desktop/Language/runtime/values.cc",
+  "file": "/home/kes/Desktop/Language/runtime/values.cc",
+  "output": "CMakeFiles/ryc.dir/runtime/values.cc.o"
+},
+{
+  "directory": "/home/kes/Desktop/Language/build",
+  "command": "/usr/bin/g++  -I/home/kes/Desktop/Language/parser -I/home/kes/Desktop/Language/runtime -I/home/kes/Desktop/Language/runtime/environment -I/home/kes/Desktop/Language/runtime/eval -I/home/kes/Desktop/Language/runtime/interpreter -I/home/kes/Desktop/Language/utils -g -o CMakeFiles/ryc.dir/runtime/nativefn.cc.o -c /home/kes/Desktop/Language/runtime/nativefn.cc",
+  "file": "/home/kes/Desktop/Language/runtime/nativefn.cc",
+  "output": "CMakeFiles/ryc.dir/runtime/nativefn.cc.o"
+},
+{
+  "directory": "/home/kes/Desktop/Language/build",
+  "command": "/usr/bin/g++  -I/home/kes/Desktop/Language/parser -I/home/kes/Desktop/Language/runtime -I/home/kes/Desktop/Language/runtime/environment -I/home/kes/Desktop/Language/runtime/eval -I/home/kes/Desktop/Language/runtime/interpreter -I/home/kes/Desktop/Language/utils -g -o CMakeFiles/ryc.dir/utils/utils.cc.o -c /home/kes/Desktop/Language/utils/utils.cc",
+  "file": "/home/kes/Desktop/Language/utils/utils.cc",
+  "output": "CMakeFiles/ryc.dir/utils/utils.cc.o"
+},
+{
+  "directory": "/home/kes/Desktop/Language/build",
+  "command": "/usr/bin/g++  -I/home/kes/Desktop/Language/parser -I/home/kes/Desktop/Language/runtime -I/home/kes/Desktop/Language/runtime/environment -I/home/kes/Desktop/Language/runtime/eval -I/home/kes/Desktop/Language/runtime/interpreter -I/home/kes/Desktop/Language/utils -g -o CMakeFiles/ryc.dir/main.cc.o -c /home/kes/Desktop/Language/main.cc",
+  "file": "/home/kes/Desktop/Language/main.cc",
+  "output": "CMakeFiles/ryc.dir/main.cc.o"
+}
+]

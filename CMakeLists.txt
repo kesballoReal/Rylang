@@ -26,6 +26,8 @@ add_executable(ryc
         runtime/interpreter/interpreter.hh
         runtime/values.cc
         runtime/values.hh
+        runtime/nativefn.cc
+        runtime/nativefn.hh
         utils/error.hh
         utils/utils.cc
         utils/utils.hh

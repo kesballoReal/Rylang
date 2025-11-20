@@ -1,0 +1,72 @@
+/* Rylang Syntax */
+
+/* Casts */
+
+/* Statements */
+
+  - BlockStmt
+
+    {
+      ...
+    }
+
+  - VarDeclaration
+
+      /* Declaration */
+      var <name>: <type> = <value>;
+      /* Initialization */
+      var <name>: <type>; 
+
+  - IfStmt
+      if (expr)
+      {
+        ...
+      }
+      else if (...)
+      {
+        ...
+      }
+      else
+      {
+        ...
+      }
+
+  - WhileStmt
+      while (expr)
+      {
+        ...
+      }
+
+  - ForStmt
+      for (init; condition; update)
+      {
+        ...
+      }
+
+  - ContinueStmt
+      continue;
+  - BreakStmt
+      break;
+
+  - FunctionStmt
+
+      func add(var x: int, var y: int) -> int {
+          return x + y;
+      }
+
+/* Expressions */ ( must end with semicolons )
+
+  - BinaryExpr        (1 + 2) * 3;
+  - UnaryExpr,        -2, !2;
+  - AssignmentExpr,   x = 10, y = 20;
+  - MemberExpr        x[0], y[1][2];
+
+/* Literals */
+
+  - NumericLiteral      12, 25
+  - IdentifierLiteral   x, y
+  - StringLiteral,      "hello"
+  - BoolLiteral,        true, false
+  - NullLiteral,        null
+
+  - ArrayLiterals       {1, 2, 3}

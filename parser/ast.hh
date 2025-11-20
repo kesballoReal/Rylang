@@ -7,22 +7,32 @@
 
 enum NodeType { // Nodes our language supports
     Program,         // This contains all statements
+    ExprStmt,
     // Statements
     BlockStmt,
     VarDeclaration,
     IfStmt,
     WhileStmt,
+    ForStmt,
+    FunctionStmt,
     ContinueStmt,
     BreakStmt,
+    ReturnStmt,
     // Expressions
     BinaryExpr,
     UnaryExpr,
     AssignmentExpr,
+    MemberExpr,
+    CallExpr,
+    Param,
+    CastExpr,
     // Literals
     NumericLiteral,
     IdentifierLiteral,
     StringLiteral,
     BoolLiteral,
+    CharLiteral,
+    ArrayLiteral,
     NullLiteral,
 };
 
@@ -34,6 +44,17 @@ struct Stmt {
 };
 
 struct Expr : Stmt {};
+
+struct ASTExprStmt : public Stmt {
+    std::shared_ptr<Expr> expression;
+
+    ASTExprStmt(std::shared_ptr<Expr> expr, std::size_t l)
+        : expression(std::move(expr)) {
+            kind = NodeType::ExprStmt;
+            line = l;
+        }
+};
+
 
 struct ASTProgram final : Stmt {
     std::vector<std::shared_ptr<Stmt>> body;
@@ -55,6 +76,51 @@ struct ASTBlockStmt final : Stmt {
         }
 };
 
+struct ASTParam final : Expr {
+    std::string name;
+    std::string type;
+    bool isArray;
+
+    ASTParam(std::string n, std::string t, bool i, std::size_t l) : name(n), type(t), isArray(i) {
+        kind = NodeType::Param;
+        line = l;
+    }
+};
+
+struct ASTCastExpr final : Expr {
+    std::string type;
+    std::shared_ptr<Expr> target;
+
+    ASTCastExpr(std::string ty, std::shared_ptr<Expr> t, std::size_t l) : type(ty), target(std::move(t)) {
+        kind = NodeType::CastExpr;
+        line = l;
+    }
+};
+
+struct ASTFunctionStmt final : Stmt {
+    std::string name;
+    std::string ret_type;
+    std::vector<std::shared_ptr<ASTParam>> params;
+    std::shared_ptr<Stmt> body;
+
+    ASTFunctionStmt(std::string n, std::string t, std::vector<std::shared_ptr<ASTParam>> p, std::shared_ptr<Stmt> b, std::size_t l) :
+                    name(n), ret_type(t), params(std::move(p)), body(std::move(b))
+    {
+        kind = NodeType::FunctionStmt;
+        line = l;
+    }
+};
+
+struct ASTReturnStmt : public Stmt {
+    std::shared_ptr<Expr> value;
+    ASTReturnStmt(std::shared_ptr<Expr> v, std::size_t l) : value(v) {
+        kind = NodeType::ReturnStmt;
+        line = l;
+    }
+};
+
+
+
 struct ASTContinueStmt final : Stmt {
     ASTContinueStmt(std::size_t l) {
         kind = NodeType::ContinueStmt;
@@ -75,8 +141,11 @@ struct ASTVarDecl final : Stmt {
     std::optional<std::shared_ptr<Expr>> value;
     bool is_const;
 
-    ASTVarDecl(std::string n, std::string t, std::shared_ptr<Expr> v, bool c, std::size_t l)
-        : name(std::move(n)), type(std::move(t)), value(std::move(v)), is_const(c) {
+    bool is_array;
+    std::optional<std::shared_ptr<Expr>> array_size;
+
+    ASTVarDecl(std::string n, std::string t, std::shared_ptr<Expr> v, bool c, bool a, std::optional<std::shared_ptr<Expr>> s, std::size_t l)
+        : name(std::move(n)), type(std::move(t)), value(std::move(v)), is_const(c), is_array(a), array_size(std::move(s)) {
         kind = NodeType::VarDeclaration;
         line = l;
     }
@@ -102,6 +171,19 @@ struct ASTWhileStmt final : Stmt {
     ASTWhileStmt(std::shared_ptr<Expr> c, std::shared_ptr<Stmt> b, std::size_t l) : condition(std::move(c)), doBranch(std::move(b)) {
         kind = NodeType::WhileStmt;
         line = l;
+    }
+};
+
+struct ASTForStmt final : Stmt {
+    std::shared_ptr<Stmt> init;
+    std::shared_ptr<Expr> condition;
+    std::shared_ptr<Expr> update;
+    std::shared_ptr<Stmt> body;
+
+    ASTForStmt(std::shared_ptr<Stmt> i, std::shared_ptr<Expr> c, std::shared_ptr<Expr> u, std::shared_ptr<Stmt> b, std::size_t ln) :
+    init(std::move(i)), condition(std::move(c)), update(std::move(u)), body(std::move(b)) {
+        kind = NodeType::ForStmt;
+        line = ln;
     }
 };
 
@@ -138,6 +220,29 @@ struct ASTAssignExpr final : Expr {
     }
 };
 
+struct ASTMemberExpr final : Expr {
+    std::shared_ptr<Expr> object;
+    std::shared_ptr<Expr> property;
+    bool computed;
+    
+    ASTMemberExpr(std::shared_ptr<Expr> obj, std::shared_ptr<Expr> prop, bool c, std::size_t l) 
+        : object(std::move(obj)), property(std::move(prop)), computed(c) {
+        kind = NodeType::MemberExpr;
+        line = l;
+    }
+};
+
+struct ASTCallExpr : Expr {
+    std::shared_ptr<Expr> callee;
+    std::vector<std::shared_ptr<Expr>> args;
+
+    ASTCallExpr(std::shared_ptr<Expr> c, std::vector<std::shared_ptr<Expr>> a,std::size_t l)
+        : callee(std::move(c)), args(std::move(a)) {
+            kind = NodeType::CallExpr;
+            line = l;
+        }
+};
+
 struct ASTNumericLiteral final : Expr {
     double value;
 
@@ -165,6 +270,15 @@ struct ASTStringLiteral final : Expr {
     } 
 };
 
+struct ASTCharLiteral final : Expr {
+    char value;
+
+    ASTCharLiteral(char v, std::size_t ln) : value(std::move(v)) {
+        kind = NodeType::CharLiteral;
+        line = ln;
+    } 
+};
+
 struct ASTBoolLiteral final : Expr {
     bool value;
 
@@ -174,7 +288,16 @@ struct ASTBoolLiteral final : Expr {
     }
 };
 
-struct ASTNullLiteral : Expr {
+struct ASTArrayLiteral final : Expr {
+    std::vector<std::shared_ptr<Expr>> elements;
+
+    ASTArrayLiteral(std::vector<std::shared_ptr<Expr>> e, std::size_t ln) : elements(std::move(e)) {
+        kind = NodeType::ArrayLiteral;
+        line = ln;
+    }
+};
+
+struct ASTNullLiteral final : Expr {
     ASTNullLiteral(std::size_t ln) {
         kind = NodeType::NullLiteral;
         line = ln;

@@ -16,14 +16,18 @@ enum TokenType {
     Number,
     Identifier,
     String,
+    Character,
 
     DataType,
+    VoidTok,
 
     NullTok,
     BoolTok,
 
     TrueTok,
     FalseTok,
+
+    NullptrTok,
 
     VarTok,
     ConstTok,
@@ -34,10 +38,14 @@ enum TokenType {
     LeftBrace,
     RightBrace,
 
+    LeftBracket,
+    RightBracket,
+
     Plus,
     Minus,
     Star,
     Slash,
+    Modulus,
   
     BinaryOP,
     UnaryOP,
@@ -45,13 +53,23 @@ enum TokenType {
     IfTok,
     ElseTok,
     WhileTok,
+    ForTok,
+
+    FuncTok,
+    ReturnTok,
+
+    CastTok,
 
     ContinueTok,
     BreakTok,
 
+    Arrow, /* -> */
+
     Equals,
+    Ampersand,
     Colon,
     Semicolon,
+    Comma,
 
     EoF // This is for letting us know where the file ends. EndOfFILE
 };

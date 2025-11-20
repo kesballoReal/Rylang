@@ -9,11 +9,13 @@
 #include "runtime/environment/environment.hh"
 #include "runtime/interpreter/interpreter.hh"
 
+#include "runtime/nativefn.hh"
+
 #include "utils/utils.hh"
 
 #define LEXER_DEBUG 0
-#define PARSER_DEBUG 1
-#define INTERPRETER_DEBUG 1
+#define PARSER_DEBUG 0
+#define INTERPRETER_DEBUG 0
 
 int main(int argc, char** argv)
 {   
@@ -67,12 +69,19 @@ int main(int argc, char** argv)
 
     Environment* env = new Environment();
 
+    register_default_native_functions();
+
+    for (auto& [name, func] : NativeRegistry::instance().all_functions()) {
+        auto native_val = std::make_shared<NativeFunctionValue>(name, func);
+        env->declareVar(name, native_val, VAL_FUNCTION, true, 0);
+    }
+
     auto result = evaluate(program, env, 0);
 
     if (INTERPRETER_DEBUG)
     {   
         std::cout << "===== INTERPRETER DEBUG =====" << std::endl;
-        std::cout << "Value: "; print_value(result);
+        std::cout << "Value: "; print_value(result, env, 0);
         std::cout << "Type: " << vtostr(result->kind) << std::endl;
     }
 
@@ -80,14 +89,3 @@ int main(int argc, char** argv)
 
     return 0;
 }
-
-/*
-
-Example: ill keep this
-
-    int         x               =               10;
-    |           |               |               |
-    V           V               V               V
-    
-    Keyword   Identifier        EqualsToken     Number
-*/
